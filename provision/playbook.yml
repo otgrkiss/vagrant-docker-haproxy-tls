@@ -1,0 +1,86 @@
+---
+- hosts: all
+  become: true
+  become_user: vagrant
+  vars:
+    osaft_version: "19.01.19"
+    docker_compose_version: "1.25.0"
+    docker_compose_sha256: "2bdab0bbf42583b4b77ee015cf908933c78f0572a7cb949a7dd8e200e6250221"
+    project_dir: "/home/vagrant/pki-projekt"
+  tasks:
+  - name: Install Docker and Compose
+    become: true
+    become_user: root
+    block:
+    - name: Install dependencies used by Docker
+      apt:
+        pkg:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg-agent
+        - software-properties-common
+        update_cache: yes
+    - name: Add Docker's GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+    - name: Add Docker Repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    - name: Install Docker Engine - Community
+      apt:
+        pkg: ["docker-ce", "docker-ce-cli", "containerd.io"]
+        update_cache: yes
+    - name: Download Docker Compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+        dest: /usr/local/bin/docker-compose
+        checksum: "sha256:{{docker_compose_sha256}}"
+        mode: "+x"
+  - name: Install and Configure OWASP O-Saft
+    block:
+    - name: Download OWASP O-Saft
+      get_url:
+        url: "https://github.com/OWASP/O-Saft/archive/{{ osaft_version }}.tar.gz"
+        dest: /tmp/o-saft.tar.gz
+    - name: Unpack OWASP O-Saft
+      unarchive:
+        src: /tmp/o-saft.tar.gz
+        dest: /home/vagrant
+    - name: Install CPANMinus for managing Perl Modules
+      apt:
+        name: cpanminus
+      become: true
+      become_user: root
+    - name: Install Development Libraries for Perl Modules
+      apt: 
+        pkg: ["libssl-dev", "zlib1g-dev"]
+      become: true
+      become_user: root
+    - name: Install Perl Modules required by OWASP O-Saft
+      cpanm:
+        name: >
+          IO::Socket::INET
+          IO::Socket::SSL
+          Net::SSLeay
+  - name: Generate SSL Certificate
+    block:
+    - name: Add Execute Permission to PKI Project Script
+      file:
+        path: "{{ project_dir }}/create-certificate.sh"
+        mode: u+x
+    - name: Generate Certificates with provisioned script
+      script:
+        chdir: "{{ project_dir }}"
+        cmd: "{{ project_dir }}/create-certificate.sh"
+  - name: Install Docker Python Module and Start Containers
+    become: yes
+    become_user: root
+    block:
+    - name: Install docker and docker-compose required by Ansible via pip
+      pip:
+        name: ["docker", "docker-compose"]
+    - name: Start Docker Compose Services
+      docker_compose:
+        project_src: "{{ project_dir }}"
+      register: output

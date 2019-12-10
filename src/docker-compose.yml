@@ -1,0 +1,29 @@
+version: '3'
+services:
+  apache-1:
+    image: httpd
+    container_name: apache-1
+    volumes:
+      - ./index1.html:/usr/local/apache2/htdocs/index.html:ro
+    networks:
+      - backend
+  apache-2:
+    image: httpd
+    container_name: apache-2
+    volumes:
+      - ./index2.html:/usr/local/apache2/htdocs/index.html:ro
+    networks:
+      - backend
+  haproxy:
+    image: haproxy
+    container_name: haproxy
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./certificate-chain.pem:/etc/ssl/certs/certificate-chain.pem:ro
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - backend
+networks:
+  backend:
