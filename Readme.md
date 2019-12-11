@@ -7,6 +7,10 @@ To learn more about this repository, review the [Technical Documentation](docs/T
 - Vagrant
 - VirtualBox
 
+## Architecture
+
+![Project Archtecture](docs/Architecture.png)
+
 ## Provision
 
 Run `vagrant up` to start a virtual machine.
