@@ -26,11 +26,12 @@ Here are some activities that can be done with the VM.
 
 ### Access the Web Page
 
-You can access the VM on ports 8080 (HTTP) and 8081 (HTTPS) from localhost.
+You can access the VM from a private IP address. To find the IP address assigned to the VM
+type `vagrant ssh` and after that `ip a` to list all network interfaces.
 
-If everything works fine, a web page on `http://localhost:8080` is displayed.
-On `https://localhost:8081` you will get a security warning beacuse of the self signed certificate. In that case you can add
-a security exception.
+If everything works fine, a web page is displayed under the ip address. 
+You will get a security warning beacuse of the self signed certificate. 
+In that case you can add a security exception.
 
 ### Try out different HAProxy configuration
 
