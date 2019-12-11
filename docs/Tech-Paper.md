@@ -1,8 +1,8 @@
-# TechPaper - Extions of Securiy a Web Server 
+# TechPaper - Extensions of Securing a Web Server 
 
 This Techpaper gives a short overview of how to securely publish a webserver with 'state of the art' technologies in year 2019. 
 
-The author Matthias is a trainee / apprentice in software developement and did a six week stay in the team for information security. This paper should  seen as a documentation for a small technical demo Matthias built during this time in DEC 2019.  
+The author Matthias is a trainee / apprentice in software developement and did a six week stay in the team for information security. This paper should seen as a documentation for a small technical demo Matthias built during this time in DEC 2019.  
 
 The paper covers the following topics:
 
@@ -21,12 +21,15 @@ Later on, TLS 1.3 will be introduced.
 The following images are inspired by the TLS handshake image at https://www.cloudflare.com/learning/ssl/keyless-ssl/
 
 ![TLS Handshake Overview](Overview-Handshake.png)
+
 **Overview of a whole TLS Handshake**
 
 ![Client Hello](Client-Hello.png)
+
 **Client Hello** - The client sends its supported TLS versions, **supported cipher suites** and a **client random** to the server.
 
 ![Server Hello, Certificate Key and Hello Done](Server-Hello.png)
+
 **Server Hello** - The server generates a **server secret**. It also selects a cipher supported by the client.
 If no matching cipher suite can be found, a downgrade happens.
 
@@ -42,13 +45,16 @@ The server chooses its **DH parameters** and signes them with its private key.
 If all data is sent, a Server Hello Done message is sent to the client.
 
 ![Client Key Exchange](Client-Key-Exchange.png)
+
 **Client Key Exchange** - Der Client übergiebt seine eigenen DH Parameter.
 
 ![Generate Session Key and finish TLS Handshake](Generate-Session-Key.png)
+
 **Generate Session Key** - Client and server generate a **premaster secret** using the DH parameters they agreed on.
 The premaster secret is used to generate a symmetric **session key**.
 
 ![Secured connection with session key](Secured-Connection.png)
+
 **Symmetric Comunication** - Symmetric encryption is more efficient than asymetric encryption.
 Therefore TLS uses a hybrid encryption.
 
@@ -83,13 +89,69 @@ so rethinking cybersecurity aspects is recommended. For further details check th
 
 ## Implementation and Code Examples
 
+Infrastructure automation is a topic of modern software development.
+This chapter covers the provisioning process of a securly configured HAProxy docker container with Vagrant
+and Ansible.
+
+All covered files on this topic are documented in detail and marked with a hyperlink.
+
 ### Automated Provsioning (Vagrant, Ansible, Docker)
 
-The following vagrant file does ...
+**Vagrant** is used for providing a reproducable development environment.
+A [Vagrantfile](../Vagrantfile) for a VirtualBox VM is provided at the project root.
+The chosen operating system is a Ubuntu Bionic release from Vagrant Cloud.
 
-Please see notes in code for further details
+To access the webpage running on the VM, a private network is created by Vagrant.
+A DHCP server then assigns an IP address to the VM.
+In contrast to port forwarding, secure redirects to https work because the ports 80 and 443 stay the same.
+Another advantage of a private network is, that you can setup another VM to capture the traffic with a wireshark GUI.
+A public IP address may not be used because the VM is configured insecure by default.
+
+Depending on the VM image, all files in project root are synced in a */vagrant* directory.
+This feature is very useful for devlopment enviroments, as a programmer may want to use his host editor or IDE.
+However, this project is more likely to be a playground, so syncing files is not intended.
+As an alternative to syncing the project files, they get copied to the VM via Vagrant's file provider.
+
+Another provider beeing used is *ansible_local*. Ansible is a configuration management tool and provides
+configuration as code by writing yaml-based playbooks. A playbook is (re-)played at Vagrant's provision step.
+Every task in the playbook should be immutable. By default Vagrant installs Ansible on the VM. Because the installation
+step fails, [a custom Ansible installation script](../provision/install-ansible.sh) is provided.
+
+**Ansible** configures the Virtual Machine by installing Docker, Docker Compose and OWASP O-Saft
+as also starting the required Docker Containers. All the required tasks are defined in [the playbook.yml](../provision/playbook.yml).
+
+**Docker** and **Docker Compose** are not necessary for running the server infrastructure, but they simplify the deployment process.
+A [docker-compose.yml](../src/docker-compose.yml).
 
 ## Configuration HaProxy and TLS
+
+Basic configuration advice from a previous apprentice has been taken into account.
+You may want to read his article first.
+
+For a secure web server configuration I can recommend
+[the Mozilla SSL configuration generator](https://ssl-config.mozilla.org/#server=haproxy&server-version=1.9.8&config=modern)
+as a starting point.
+
+A lot of configuration is documented in the [haproxy-tls1_2.cfg configuration file](../src/haproxy-tls1_2.cfg)
+
+### Remark on HTTP Public Key Pinning
+
+Please note that HTTP public key pinning is not covered in this project.
+If you wish to strengthen integrety, another *set-header* configuration for the *Public-Key-Pins* header is required.
+Also think about a backup certificate and be careful as a misconfiguration can lock out a user from your web page.
+I can recommend the apprentice's article and the Mozilla documentation (https://developer.mozilla.org/de/docs/Web/Security/Public_Key_Pinning) for more details on this topic.
+
+### Remark on internal secure server communication
+
+In this project the internal communication between HAProxy load balancer and both Apache web servers
+happens unencrypted. This can lead to security problems, espacially when login data is transferred.
+You might consider to create your own certificates for internal use.
+
+The use of self signed certificates for your own infrasture is great, as you trust yourself the most.
+There is also no risk of a certificate authority beeing compromised by an attacker.
+
+If you have Vault in your infrastructure, you can make use of the PKI secret backend.
+It manages the root CA, intermidiate CAs and ceritificates for you and renews them. 
 
 ## Index Of Abbreviations
 
@@ -98,6 +160,8 @@ Please see notes in code for further details
 | DHE | Diffie Hellmann Exchange |
 | ECDHE | Elliptic-curve Diffie-Hellman |
 | PFS | Perfect Forward Secrecy |
+| VM | Virtual Machine |
+| CA | Cerificate Authority |
 
 ## Furher Reading
 

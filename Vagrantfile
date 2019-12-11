@@ -13,10 +13,15 @@ Vagrant.configure("2") do |config|
     # The required files get copied with the file provisioner instead
     config.vm.synced_folder '.', '/vagrant', disabled: true
 
-    # Forward the http and https ports on the guest machine
-    # These ports are used by HaProxy running in a docker environment
-    config.vm.network "forwarded_port", guest: 80, host: 8080
-    config.vm.network "forwarded_port", guest: 443, host: 8081
+    # Forward the http and https ports on the guest machine could be possible
+	# However, https redirects of the webbrowser would fail with the secure HAProxy config
+	# In detail, the browser recieves a Strict-Transport-Security header and redirects to port 443
+    # config.vm.network "forwarded_port", guest: 80, host: 8080
+    # config.vm.network "forwarded_port", guest: 443, host: 8081
+
+	# Better for this playground project
+	# The VM now has a private IP address assigned by a DHCP server
+	config.vm.network "private_network", type: "dhcp"
 
     # Move files to the virtual machine
     # Provison the playbook used by ansible
