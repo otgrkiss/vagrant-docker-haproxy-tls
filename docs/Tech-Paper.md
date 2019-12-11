@@ -1,8 +1,9 @@
 # TechPaper - Extensions of Securing a Web Server 
 
-This Techpaper gives a short overview of how to securely publish a webserver with 'state of the art' technologies in year 2019. 
+This Techpaper gives a short overview on how to securely publish a webserver with 'state of the art' technologies in year 2019. 
 
-The author Matthias is a trainee / apprentice in software developement and did a six week stay in the team for information security. This paper should seen as a documentation for a small technical demo Matthias built during this time in DEC 2019.  
+The author Matthias is a trainee / apprentice in software developement and did a six week stay in the team for information security. 
+This paper should be seen as a documentation for a small technical demo Matthias built during this time in DEC 2019.
 
 The paper covers the following topics:
 
@@ -10,11 +11,10 @@ The paper covers the following topics:
 - Deployment of Docker with Ansible
 - Deployment of a TLS secure HaProxy LoadBalancer in front of Apache Containers
 
-
 ## Theory and Basics
 
-This part covers the theory of TLSv1.2 with screenshots of a Wireshark analysis.
-Later on, TLS 1.3 will be introduced. 
+This part covers the theory and basics of TLSv1.2 with screenshots of a Wireshark analysis.
+Later on, TLS 1.3 will be introduced to the reader.
 
 ### TLSv1.2 Handshake with DH Key Exhange
 
@@ -39,19 +39,21 @@ ECDHE introduces further security because of the discrete logarithm problem.
 
 The server also sends a **public certificate** with a signature.
 A certificate gets signed by a certificate authority to provide integrety.
+A browser is configured to trust certain root certificate authorities.
 
 The server chooses its **DH parameters** and signes them with its private key.
 
-If all data is sent, a Server Hello Done message is sent to the client.
+If all data is sent, the client recieves a Server Hello Done message.
 
 ![Client Key Exchange](Client-Key-Exchange.png)
 
-**Client Key Exchange** - Der Client übergiebt seine eigenen DH Parameter.
+**Client Key Exchange** - The client verifies the server's public certificate and sends its own DH Parameter.
 
 ![Generate Session Key and finish TLS Handshake](Generate-Session-Key.png)
 
 **Generate Session Key** - Client and server generate a **premaster secret** using the DH parameters they agreed on.
-The premaster secret is used to generate a symmetric **session key**.
+The premaster secret and both randoms are being used to generate a symmetric **session key**.
+Also sent is a session ticket for session resumption.
 
 ![Secured connection with session key](Secured-Connection.png)
 
@@ -64,8 +66,8 @@ Therefore TLS uses a hybrid encryption.
 	- favour strong AEAD implementations to assure confidentiallity and authenticity of data
 	- no RSA Key Exchange; favour DHE
 - more of communication is encrypted
-	- all handshake messages after server hello
-	- prevents downgrading of cipher suites (FREAK attack)
+	- all handshake messages after server hello are encrypted
+	- prevents downgrading attacks of cipher suites (FREAK attack)
 - less roundtrips in communication
 	- DHE can happen at client hello
 - predifined DH parameters
@@ -73,6 +75,7 @@ Therefore TLS uses a hybrid encryption.
 	- no small DH parameter
 	- prevents LogJam and WeakDH attack
 - 0-RTT mode introduced
+	- replaces old mechanism of session tickets
 	- saves roundtrip at client reconnection
 	- danger of replay attacks (i.e. a replayed POST request)
 
@@ -81,17 +84,17 @@ for the end-user.
 
 ### Remark on TLS 1.3
 
-Although TLS 1.3 strengthens communication for end-users, there are cybersecurity challenges.
+Although TLS 1.3 strengthens communication security for end-users, there are cybersecurity challenges.
 Because of the short being of TLS 1.3, there are no good tooling and guidelines for companies yet.
 However, the new TLS version may become relevant in near future,
-so rethinking cybersecurity aspects is recommended. For further details check the article from Kaspersky.
+so rethinking cybersecurity aspects is recommended. For further details check the article from Kaspersky
 (https://www.kaspersky.com/blog/secure-futures-magazine/tls-1-3-network/28278/)
 
 ## Implementation and Code Examples
 
 Infrastructure automation is a topic of modern software development.
 This chapter covers the provisioning process of a securly configured HAProxy docker container with Vagrant
-and Ansible.
+and Ansible. The goal is to have a fully working development environment with only one command.
 
 All covered files on this topic are documented in detail and marked with a hyperlink.
 
@@ -108,20 +111,21 @@ Another advantage of a private network is, that you can setup another VM to capt
 A public IP address may not be used because the VM is configured insecure by default.
 
 Depending on the VM image, all files in project root are synced in a */vagrant* directory.
-This feature is very useful for devlopment enviroments, as a programmer may want to use his host editor or IDE.
+This feature is very useful for devlopment enviroments as a programmer may want to use his host editor or IDE.
 However, this project is more likely to be a playground, so syncing files is not intended.
-As an alternative to syncing the project files, they get copied to the VM via Vagrant's file provider.
+As an alternative to syncing the project files, they get copied to the VM via Vagrant's file provisioner.
 
-Another provider beeing used is *ansible_local*. Ansible is a configuration management tool and provides
+Another provisioner beeing used is *ansible_local*. Ansible is a configuration management tool and provides
 configuration as code by writing yaml-based playbooks. A playbook is (re-)played at Vagrant's provision step.
-Every task in the playbook should be immutable. By default Vagrant installs Ansible on the VM. Because the installation
-step fails, [a custom Ansible installation script](../provision/install-ansible.sh) is provided.
+Every task in the playbook should be immutable. By default Vagrant installs Ansible on the VM. Because the 
+automated installation fails, [a custom Ansible installation script](../provision/install-ansible.sh) is provided.
 
 **Ansible** configures the Virtual Machine by installing Docker, Docker Compose and OWASP O-Saft
-as also starting the required Docker Containers. All the required tasks are defined in [the playbook.yml](../provision/playbook.yml).
+as also starting the required Docker Containers. All the required tasks are defined in the [playbook.yml](../provision/playbook.yml).
 
 **Docker** and **Docker Compose** are not necessary for running the server infrastructure, but they simplify the deployment process.
-A [docker-compose.yml](../src/docker-compose.yml).
+In contrast to starting all docker containers via command line, 
+a [docker-compose.yml](../src/docker-compose.yml) defines all required services.
 
 ## Configuration HaProxy and TLS
 
@@ -137,34 +141,39 @@ A lot of configuration is documented in the [haproxy-tls1_2.cfg configuration fi
 ### Remark on HTTP Public Key Pinning
 
 Please note that HTTP public key pinning is not covered in this project.
-If you wish to strengthen integrety, another *set-header* configuration for the *Public-Key-Pins* header is required.
+If you wish to protect yourself from compromised CAs, another *set-header* configuration for the *Public-Key-Pins* header is required.
 Also think about a backup certificate and be careful as a misconfiguration can lock out a user from your web page.
+A misconfiguration can also disable key pinning completely.
 I can recommend the apprentice's article and the Mozilla documentation (https://developer.mozilla.org/de/docs/Web/Security/Public_Key_Pinning) for more details on this topic.
 
 ### Remark on internal secure server communication
 
-In this project the internal communication between HAProxy load balancer and both Apache web servers
-happens unencrypted. This can lead to security problems, espacially when login data is transferred.
+In this project, the internal communication between HAProxy and both Apache web servers happens unencrypted.
+This can lead to security problems, espacially when sensitive data is exchanged.
 You might consider to create your own certificates for internal use.
 
 The use of self signed certificates for your own infrasture is great, as you trust yourself the most.
 There is also no risk of a certificate authority beeing compromised by an attacker.
 
 If you have Vault in your infrastructure, you can make use of the PKI secret backend.
-It manages the root CA, intermidiate CAs and ceritificates for you and renews them. 
+It manages the root CA, intermidiate CAs and ceritificates for you. 
 
 ## Index Of Abbreviations
 
 | Abbrevitation | Meaning |
 |-|-|
+| CA | Cerificate Authority |
 | DHE | Diffie Hellmann Exchange |
 | ECDHE | Elliptic-curve Diffie-Hellman |
 | PFS | Perfect Forward Secrecy |
 | VM | Virtual Machine |
-| CA | Cerificate Authority |
+| 0-RTT | Zero Round Trip Time Resumption |
 
 ## Furher Reading
 
+- https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/
+- https://www.cloudflare.com/learning/ssl/keyless-ssl/
+- https://blog.cloudflare.com/rfc-8446-aka-tls-1-3/
 - https://www.owasp.org/images/b/bd/Richtig_verschluesseln_mit_SSL%2BTLS.pdf
 (Presentation of the OWASP O-Saft Tool and recommandations for strong encryption)
 - https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.pdf?__blob=publicationFile&v=7 (German)
