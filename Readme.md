@@ -49,3 +49,7 @@ Vagrant home directory.
 To test your configuration you can use the `+check` argument:
 
 `./o-saft +check localhost | tee localhost-check.txt`
+
+## Weitere Aufgaben
+
+- [Unterschied Informationssicherheit und Datenschutz](docs/Unterschied-Datentschutz-Informationssicherheit.md)
