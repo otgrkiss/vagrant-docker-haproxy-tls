@@ -120,8 +120,9 @@ configuration as code by writing yaml-based playbooks. A playbook is (re-)played
 Every task in the playbook should be immutable. By default Vagrant installs Ansible on the VM. Because the 
 automated installation fails, [a custom Ansible installation script](../provision/install-ansible.sh) is provided.
 
-**Ansible** configures the Virtual Machine by installing Docker, Docker Compose and OWASP O-Saft
-as also starting the required Docker Containers. All the required tasks are defined in the [playbook.yml](../provision/playbook.yml).
+**Ansible** configures the Virtual Machine by installing Docker and Docker Compose
+as also generating certificates and starting the required Docker Containers.
+All the required tasks are defined in the [playbook.yml](../provision/playbook.yml).
 
 **Docker** and **Docker Compose** are not necessary for running the server infrastructure, but they simplify the deployment process.
 In contrast to starting all docker containers via command line, 
@@ -137,6 +138,9 @@ For a secure web server configuration I can recommend
 as a starting point.
 
 A lot of configuration is documented in the [haproxy-tls1_2.cfg configuration file](../src/haproxy-tls1_2.cfg)
+
+OWASP O-Saft is a tool used for improving the TLS configuration of the web server.
+For a simple setup, a preconfigured Docker container gets provisioned with Docker Compose.
 
 ### Remark on HTTP Public Key Pinning
 

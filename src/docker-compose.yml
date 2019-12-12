@@ -2,6 +2,12 @@ version: '3'
 # Thre services are started
 # (Two Apaches infront of a haproxy load balancer)
 services:
+  osaft:
+    image: owasp/o-saft
+    command: ["+check", "haproxy"]
+    container_name: osaft
+    networks:
+      - backend
   apache-1:
     image: httpd
     container_name: apache-1

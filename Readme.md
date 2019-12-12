@@ -43,12 +43,14 @@ You can connect to the VM using the `vagrant ssh` command.
 
 ### Test your TLS Configuration with OWASP O-Saft
 
-The VM contains an installation of [OWASP O-Saft](https://www.owasp.org/index.php/O-Saft) in the
-Vagrant home directory.
+The docker-compose.yml defines a [OWASP O-Saft](https://www.owasp.org/index.php/O-Saft) container
+with a command to check the SSL configuration of HAProxy.
 
-To test your configuration you can use the `+check` argument:
+To test your configuration you can simply run the following command:
 
-`./o-saft +check localhost | tee localhost-check.txt`
+`docker-compose up --no-color osaft | less`
+
+*(`| less` makes the console output scrollable, `| tee <filename>` saves the console output to a file)*
 
 ## Weitere Aufgaben
 
