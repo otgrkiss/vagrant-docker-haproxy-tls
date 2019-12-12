@@ -65,6 +65,7 @@ Therefore TLS uses a hybrid encryption.
 - weak cipher suites have been removed
 	- favour strong AEAD implementations to assure confidentiallity and authenticity of data
 	- no RSA Key Exchange; favour DHE
+- remove insecure stream ciphers (like RC4) and CBC mode (padding vulnerability)
 - more of communication is encrypted
 	- all handshake messages after server hello are encrypted
 	- prevents downgrading attacks of cipher suites (FREAK attack)
