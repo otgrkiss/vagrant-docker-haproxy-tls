@@ -52,6 +52,31 @@ To test your configuration you can simply run the following command:
 
 *(`| less` makes the console output scrollable, `| tee <filename>` saves the console output to a file)*
 
+### Record TLS handshake with Wireshark
+
+You can analyze the whole TLS Handshake with Wireshark.
+This guide also works the same with TLS 1.3.
+
+You can also load the prerecorded files from the wireshark folder of this project.
+
+1. Setup a second virtual machine with Linux or
+install wireshark on your host machine.
+For the virtual machine, you need to specify the correct
+host-only network adapter.
+1. To decrypt the last parts of the handshake, set the environment variable
+`SSLKEYLOGFILE` to a location your current user has acces to, i.e the home directory:
+
+	`export SSLKEYLOGFILE=$PWD/keys.txt`
+1. Open Wireshark
+1. Go to `Edit -> Preferences`.
+1. In the preference dialog, navigate to `Protocols -> SSL` or `Protocols -> TLS`
+1. Set the path to the SSLKEYLOGFILE (the file gets created later on)
+1. Start a recording on the matching network interface
+1. Use a browser or curl: `curl -k -X GET https://172.28.128.7`
+1. Stop the recording and filter for `ssl`
+1. You should now be able to see the handshake and also decrypted SSL.
+Also check the keys.txt file, to understand what happened.
+
 ## Weitere Aufgaben
 
 - [Unterschied Informationssicherheit und Datenschutz](docs/Unterschied-Datentschutz-Informationssicherheit.md)

@@ -64,32 +64,37 @@ Therefore TLS uses a hybrid encryption.
 
 - weak cipher suites have been removed
 	- favour strong AEAD implementations to assure confidentiallity and authenticity of data
-	- no RSA Key Exchange; favour DHE
+	- no RSA Key Exchange; favour ephemral mode ECDHE
 - remove insecure stream ciphers (like RC4) and CBC mode (padding vulnerability)
 - more of communication is encrypted
 	- all handshake messages after server hello are encrypted
 	- prevents downgrading attacks of cipher suites (FREAK attack)
 - less roundtrips in communication
-	- DHE can happen at client hello
+	- DHE can happen at client hello (Key-Share)
+	- **Client ephemral public Key Share**
+	![Key Share at Client Hello](TLS_1_3-Key-Share-Client.png)
 - predifined DH parameters
 	- no weak parameters
 	- no small DH parameter
 	- prevents LogJam and WeakDH attack
 - 0-RTT mode introduced
-	- replaces old mechanism of session tickets
 	- saves roundtrip at client reconnection
 	- danger of replay attacks (i.e. a replayed POST request)
 
 To conclude, TLS 1.3 has removed a lot of legacy features, thus providing a stronger protection
 for the end-user.
 
-### Remark on TLS 1.3
+### TLS 1.3 and Network Security
 
-Although TLS 1.3 strengthens communication security for end-users, there are cybersecurity challenges.
-Because of the short being of TLS 1.3, there are no good tooling and guidelines for companies yet.
-However, the new TLS version may become relevant in near future,
-so rethinking cybersecurity aspects is recommended. For further details check the article from Kaspersky
-(https://www.kaspersky.com/blog/secure-futures-magazine/tls-1-3-network/28278/)
+In a company network there are middleboxes for analyzing and monitoring internal and external network traffic.
+For TLS 1.2 connections, middleboxes act as a man-in-the-middle and decrypt TLS sessions. With TLS 1.3 more parts of the TLS
+handshake are encrypted
+and no static server keys can be shared with the middlebox.
+Thus, new challenges in network security arise.
+
+Further Reading on this topic:
+
+- https://tools.ietf.org/id/draft-camwinget-tls-use-cases-03.html#sni-encryption-in-tls-through-tunneling
 
 ## Implementation and Code Examples
 
@@ -167,6 +172,7 @@ It manages the root CA, intermidiate CAs and ceritificates for you.
 
 | Abbrevitation | Meaning |
 |-|-|
+| AEAD | Authenticated Encryption with Additional Data |
 | CA | Cerificate Authority |
 | DHE | Diffie Hellmann Exchange |
 | ECDHE | Elliptic-curve Diffie-Hellman |
