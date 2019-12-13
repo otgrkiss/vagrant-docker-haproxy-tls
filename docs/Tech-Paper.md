@@ -1,15 +1,15 @@
-# TechPaper - Extensions of Securing a Web Server 
+# Tech Paper - Extensions of Securing a Web Server 
 
-This Techpaper gives a short overview on how to securely publish a webserver with 'state of the art' technologies in year 2019. 
+This techpaper gives a short overview on how to securely publish a webserver with 'state of the art' technologies in year 2019. 
 
-The author Matthias is a trainee / apprentice in software developement and did a six week stay in the team for information security. 
+The author Matthias is apprentice in software developement and did a six week stay in the team for information security. 
 This paper should be seen as a documentation for a small technical demo Matthias built during this time in DEC 2019.
 
 The paper covers the following topics:
 
 - Deployment of a Dockerhost with Vagrant
 - Deployment of Docker with Ansible
-- Deployment of a TLS secure HaProxy LoadBalancer in front of Apache Containers
+- Deployment of a HaProxy LoadBalancer with a secure TLS configuration in front of Apache Containers
 
 ## Theory and Basics
 
@@ -18,7 +18,7 @@ Later on, TLS 1.3 will be introduced to the reader.
 
 ### TLSv1.2 Handshake with DH Key Exhange
 
-The following images are inspired by the TLS handshake image at https://www.cloudflare.com/learning/ssl/keyless-ssl/
+The following images are inspired by the TLS handshake images at https://www.cloudflare.com/learning/ssl/keyless-ssl/
 
 ![TLS Handshake Overview](Overview-Handshake.png)
 

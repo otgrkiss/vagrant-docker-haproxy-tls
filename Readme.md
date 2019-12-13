@@ -35,8 +35,8 @@ In that case you can add a security exception.
 
 ### Try out different HAProxy configuration
 
-The standard provisioning offers a TLS 1.3 based HAProxy configuration.
-You can i.e. load a TLS 1.2 HAProxy configuration, which is
+The standard provisioning offers a TLS 1.2 based HAProxy configuration.
+You can i.e. load a TLS 1.3 HAProxy configuration, which is
 also provided in the repository. Change the file in the docker-compose.yml to do so.
 
 You can connect to the VM using the `vagrant ssh` command.
@@ -60,7 +60,7 @@ This guide also works the same with TLS 1.3.
 You can also load the prerecorded files from the wireshark folder of this project.
 
 1. Setup a second virtual machine with Linux or
-install wireshark on your host machine.
+install Wireshark on your host machine.
 For the virtual machine, you need to specify the correct
 host-only network adapter.
 1. To decrypt the last parts of the handshake, set the environment variable
