@@ -94,7 +94,8 @@ Thus, new challenges in network security arise.
 
 Further Reading on this topic:
 
-- https://tools.ietf.org/id/draft-camwinget-tls-use-cases-03.html#sni-encryption-in-tls-through-tunneling
+- https://www.symantec.com/content/dam/symantec/docs/other-resources/responsibly-intercepting-tls-and-the-impact-of-tls-1.3-en.pdf
+- https://tools.ietf.org/id/draft-camwinget-tls-use-cases-03.html (TLS 1.3 Impact on Network-Based Security; Draft expired)
 
 ## Implementation and Code Examples
 
@@ -168,7 +169,7 @@ There is also no risk of a certificate authority beeing compromised by an attack
 If you have Vault in your infrastructure, you can make use of the PKI secret backend.
 It manages the root CA, intermidiate CAs and ceritificates for you. 
 
-## Index Of Abbreviations
+## Index of Abbreviations
 
 | Abbrevitation | Meaning |
 |-|-|
@@ -183,8 +184,10 @@ It manages the root CA, intermidiate CAs and ceritificates for you.
 ## Furher Reading
 
 - https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/
-- https://www.cloudflare.com/learning/ssl/keyless-ssl/
+- https://www.cloudflare.com/learning/ssl/keyless-ssl/ (Last retrieval)
 - https://blog.cloudflare.com/rfc-8446-aka-tls-1-3/
 - https://www.owasp.org/images/b/bd/Richtig_verschluesseln_mit_SSL%2BTLS.pdf
 (Presentation of the OWASP O-Saft Tool and recommandations for strong encryption)
 - https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.pdf?__blob=publicationFile&v=7 (German)
+
+Last visit for all linked websites in this document is the 09.01.2020
