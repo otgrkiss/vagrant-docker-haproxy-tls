@@ -2,12 +2,18 @@
 
 ## Overview
 
-This project is a practical implementation of deploying ...
-
-For detailed information about TLS encryption,
-see my [Tech Paper (Extensions of Securing a Web Server with TLS)](docs/Tech-Paper.md)
+This project is a practical implementation of deploying a HAProxy infront of two Apaches
+with Vagrant and Docker. HAProxy is used as a load balancer which proxies the traffic to both Apaches.
+The main focus lies on analysing different TLS configurations and improving the load balancer configuration.
 
 ***
+
+For detailed information about TLS encryption including the different configuration files in this repository,
+see my technical paper ["Extensions of Securing a Web Server with TLS"](docs/Tech-Paper.md)
+
+***
+
+The follwing chapters will focus on the setup of a VM with Vagrant and the testing of TLS 1.2 and 1.3 configurations.
 
 ## Requirements
 
