@@ -1,4 +1,4 @@
-# Tech Paper - Extensions of Securing a Web Server 
+# Tech Paper - Extensions of Securing a Web Server with TLS
 
 This techpaper gives a short overview on how to securely publish a webserver with 'state of the art' technologies in year 2019. 
 
@@ -62,27 +62,29 @@ Therefore TLS uses a hybrid encryption.
 
 ### Benefits of TLS 1.3
 
-- weak cipher suites have been removed
+- Removal of weak cipher suites
 	- favour strong AEAD implementations to assure confidentiallity and authenticity of data
 	- no RSA Key Exchange; favour ephemral mode ECDHE
-- remove insecure stream ciphers (like RC4) and CBC mode (padding vulnerability)
-- more of communication is encrypted
+- Removal of insecure stream ciphers (like RC4) and CBC mode (padding vulnerability)
+- More of client-server communication is encrypted
 	- all handshake messages after server hello are encrypted
 	- prevents downgrading attacks of cipher suites (FREAK attack)
-- less roundtrips in communication
+- Less roundtrips in communication
 	- DHE can happen at client hello (Key-Share)
 	- **Client ephemral public Key Share**
 	![Key Share at Client Hello](TLS_1_3-Key-Share-Client.png)
-- predifined DH parameters
-	- no weak parameters
-	- no small DH parameter
+- Secure predifined DH parameters
+	- no weak and small parameters
 	- prevents LogJam and WeakDH attack
-- 0-RTT mode introduced
+- Introduction of 0-RTT mode
 	- saves roundtrip at client reconnection
-	- danger of replay attacks (i.e. a replayed POST request)
 
 To conclude, TLS 1.3 has removed a lot of legacy features, thus providing a stronger protection
 for the end-user.
+
+*The 0-RTT mode needs to be configured correctly.*
+*There is a risk of replay attacks (i.e. a replayed POST request).*
+*Thus, you may consider to disable 0-RTT mode or restrict it only to idempotent and safe requests (i.e. a GET request).*
 
 ### TLS 1.3 and Network Security
 
@@ -92,7 +94,7 @@ handshake are encrypted
 and no static server keys can be shared with the middlebox.
 Thus, new challenges in network security arise.
 
-Further Reading on this topic:
+Further Reading and examples of this topic:
 
 - https://www.symantec.com/content/dam/symantec/docs/other-resources/responsibly-intercepting-tls-and-the-impact-of-tls-1.3-en.pdf
 - https://tools.ietf.org/id/draft-camwinget-tls-use-cases-03.html (TLS 1.3 Impact on Network-Based Security; Draft expired)
@@ -181,13 +183,27 @@ It manages the root CA, intermidiate CAs and ceritificates for you.
 | VM | Virtual Machine |
 | 0-RTT | Zero Round Trip Time Resumption |
 
-## Furher Reading
+## Further Reading
 
-- https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/
-- https://www.cloudflare.com/learning/ssl/keyless-ssl/ (Last retrieval)
-- https://blog.cloudflare.com/rfc-8446-aka-tls-1-3/
-- https://www.owasp.org/images/b/bd/Richtig_verschluesseln_mit_SSL%2BTLS.pdf
-(Presentation of the OWASP O-Saft Tool and recommandations for strong encryption)
-- https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.pdf?__blob=publicationFile&v=7 (German)
+- The document ["What Happens in a TLS Handshake? | SSL Handshake"](https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/)
+covers the steps of a TLS 1.2 RSA and DHE handshake. 
+- The document ["How Does Keyless SSL Work?"](https://www.cloudflare.com/learning/ssl/keyless-ssl/)
+informs you about a cloud vendor integration for TLS encryption.
+It also visualizes the process of the TLS handshake steps
+covered in the document above. 
+- In the blog article ["A Detailed Look at RFC"](https://blog.cloudflare.com/rfc-8446-aka-tls-1-3/)
+the author outlines many improvements of TLS 1.3
+by providing concrete examples.
 
-Last visit for all linked websites in this document is the 09.01.2020
+### German Documents
+
+- Die Präsentation ["O-Saft Richtig verschlüsseln mit ~~SSL~~/TLS"](https://www.owasp.org/images/b/bd/Richtig_verschluesseln_mit_SSL%2BTLS.pdf)
+führt die Gründe der Einführung des OWASP O-Saft Tools auf.
+Dabei wird auf die wichtigsten Sicherheitsprobleme von TLS Konfigurationen eingangen.
+Der TLS 1.3 Standard war zum Zeitpunkt der Herausgabe noch nicht veröffentlicht. 
+- Die BSI hat eine technische Richtline ["Kryptographische Verfahren:
+Empfehlungen und Schlüssellängen"](https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.pdf?__blob=publicationFile&v=7)
+veröffentlicht. Aus der Richtlinie können besonders Empfehlungen
+zu TLS 1.2 und 1.3 abgeleitet werden.
+
+Last visit for all linked websites in this technical paper is the 09.01.2020

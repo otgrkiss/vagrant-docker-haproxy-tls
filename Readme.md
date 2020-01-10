@@ -1,17 +1,24 @@
 # Dockerized HAProxy with TLS Configuration Provisioned with Vagrant
 
-To learn more about this repository, review the [Technical Documentation](docs/Tech-Paper.md)
+## Overview
+
+This project is a practical implementation of deploying ...
+
+For detailed information about TLS encryption,
+see my [Tech Paper (Extensions of Securing a Web Server with TLS)](docs/Tech-Paper.md)
+
+***
 
 ## Requirements
 
 - Vagrant
 - VirtualBox
 
-## Architecture
+## Overview of System Setup
 
 ![Project Archtecture](docs/Architecture.png)
 
-## Provision
+## VM Provisioning
 
 Run `vagrant up` to start a virtual machine.
 Review the output from Vagrant. Check if the `certificate-chain.pem` is generated and three Docker containers are running.
@@ -20,9 +27,9 @@ If you want the newest version of Guest Additions on the machine,
 you can install the [Vagrant VB Guest Plugin](https://github.com/dotless-de/vagrant-vbguest). The Guest Additons are not required
 for the VM.
 
-## And Now?
+## Practical Use Case Demos
 
-Here are some activities that can be done with the VM. 
+The following points show what can be done with this setup for testing purposes.
 
 ### Access the Web Page
 
@@ -41,7 +48,7 @@ also provided in the repository. Change the file in the docker-compose.yml to do
 
 You can connect to the VM using the `vagrant ssh` command.
 
-### Test your TLS Configuration with OWASP O-Saft
+### Test your TLS Configuration with OWASP O-Saft Security Testing Tool
 
 The docker-compose.yml defines a [OWASP O-Saft](https://www.owasp.org/index.php/O-Saft) container
 with a command to check the SSL configuration of HAProxy.
@@ -52,7 +59,7 @@ To test your configuration you can simply run the following command:
 
 *(`| less` makes the console output scrollable, `| tee <filename>` saves the console output to a file)*
 
-### Record TLS handshake with Wireshark
+### (Optional: For Deeper Inspection) Record TLS Handshake with Wireshark
 
 You can analyze the whole TLS Handshake with Wireshark.
 This guide also works the same with TLS 1.3.
@@ -77,6 +84,6 @@ host-only network adapter.
 1. You should now be able to see the handshake and also decrypted SSL.
 Also check the keys.txt file, to understand what happened.
 
-## Weitere Aufgaben
+## Further Tasks not covered in this Repo
 
 - [Unterschied Informationssicherheit und Datenschutz](docs/Unterschied-Datentschutz-Informationssicherheit.md)
