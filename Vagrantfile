@@ -2,7 +2,6 @@
 Vagrant.configure("2") do |config|
     # Use Ubuntu Bionic from Vagrant Cloud (version 18.04.3)
     config.vm.box = "ubuntu/bionic64"
-    config.vm.box_download_insecure = true
 
     # Configure VirtualBox provider
     config.vm.provider "virtualbox" do |vb|
